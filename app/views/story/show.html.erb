@@ -1,0 +1,26 @@
+<h2>
+  <span id="vote_score"> 
+  Score: <% if !@story.votes || @story.votes.size.zero? %>0<% else %><%= @story.votes.size %><% end %> 
+  </span> 
+  <%= @story.name %>
+</h2> 
+<ul id="vote_history"> 
+  <% if !@story.votes || @story.votes.size.zero? %> 
+    <em>No shoves yet!</em> 
+  <% else %> 
+    <%= render :partial => 'vote', 
+               :collection => @story.latest_votes %> 
+  <% end %> 
+</ul> 
+<p><%= link_to @story.link, @story.link %></p>
+<p class="submitted_by"> 
+  Submitted by: 
+  <span><%= @story.user.name %></span> 
+</p>
+<div id="vote_link"> 
+  <%= link_to_remote 'shove it', 
+        { :url => { :action => 'vote', :id => @story } }, 
+        { :href => url_for(:action => 'vote', :id => @story) } %> 
+</div> 
+<%= link_to 'Edit', edit_story_path(@story) %> |
+<%= link_to 'Back', stories_path %>

@@ -1,0 +1,10 @@
+<div class="story"> 
+    <p><%= link_to story.name, 
+              story_url(:permalink => story.permalink) %> 
+              | <%= link_to 'Show', story_url(:permalink => story.permalink) %> | <%= link_to 'Edit', edit_story_path(story) %>
+       | <%= link_to 'Destroy', story, :confirm => 'Are you sure?', :method => :delete %>
+    </p>
+    <p>
+    Submitted by: <%= story.user.name %> | 
+      Score: <%= story.votes.size %> 
+    </p>

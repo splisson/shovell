@@ -1,0 +1,20 @@
+# mysql 5.1.x
+#   gem install mysql
+development: 
+  adapter: mysql 
+  database: shovell_development 
+  username: root 
+  password: 
+  host: localhost 
+test: 
+  adapter: mysql 
+  database: shovell_test 
+  username: root 
+  password: 
+  host: localhost 
+production: 
+  adapter: mysql 
+  database: shovell_production 
+  username: root 
+  password: 
+  host: localhost

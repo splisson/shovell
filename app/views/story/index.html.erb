@@ -1,0 +1,21 @@
+<h1>Story List#index</h1>
+<h4>Current time is:  <%= @current_time %></h4>
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Link</th>
+  </tr>
+
+<% @stories.each do |story| %>
+  <tr>
+    <td><a href="<%= story.link %>"><%= story.name %></a> </td>
+    <td><%=h story.link %></td>
+    <td><%= link_to 'Show', story %></td>
+    <td><%= link_to 'Edit', edit_story_path(story) %></td>
+    <td><%= link_to 'Destroy', story, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+<br />
+
+<%= link_to 'New story', new_story_path %>
