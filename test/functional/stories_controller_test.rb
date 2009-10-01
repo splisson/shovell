@@ -31,7 +31,7 @@ class StoriesControllerTest < ActionController::TestCase
       }
     end
     assert ! assigns(:story).new_record? 
-    assert_redirected_to story_path(assigns(:story))
+    assert_redirected_to story_url(:permalink => assigns(:story).permalink)
     assert_not_nil flash[:notice] 
   end
   
@@ -53,7 +53,7 @@ class StoriesControllerTest < ActionController::TestCase
   test "should update story" do
     put_with_user :update, :id => stories(:one).to_param, :story => { :name => 'updated name' }
     assert_not_nil assigns(:story)
-    assert_redirected_to story_path(assigns(:story))
+    assert_redirected_to story_url(:permalink => assigns(:story).permalink) #story_path(assigns(:story))
   end
 
   test "should destroy story" do
