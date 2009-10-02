@@ -1,25 +1,21 @@
-# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-
-# one:
-#   column: value
-#
-# two:
-#   column: value
-
-one: 
-  id: 1 
-  name: My shiny weblog 
-  link: http://poocs.net/ 
+first:
+  id: 1
+  name: My shiny weblog
+  link: http://poocs.net/
   permalink: my-shiny-weblog
-  description: "isn't it nice"
   user_id: 1
   votes_count: 2
-  
-two: 
-  id: 2 
-  name: SitePoint Forums 
-  link: http://www.sitepoint.com/forums/ 
+another:
+  id: 2
+  name: SitePoint Forums
+  link: http://www.sitepoint.com/forums/
   permalink: sitepoint-forums
-  description: "their nice forum?"
   user_id: 1
   votes_count: 0
+promoted:
+  id: 3
+  name: What is a Debugger?
+  link: http://en.wikipedia.org/wiki/Debugger/
+  permalink: promoted-story
+  user_id: 2
+  votes_count: 5

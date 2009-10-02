@@ -1,16 +1,10 @@
-# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-
-# one:
-#   column: value
-#
-# two:
-#   column: value
-one:
+first:
   id: 1
   story_id: 1
+  created_at: <%= Time.now.to_s(:db) %>
   user_id: 1
-  
-two:
+second:
   id: 2
   story_id: 1
+  created_at: <%= Time.now.to_s(:db) %>
   user_id: 2

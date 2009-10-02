@@ -1,19 +1,12 @@
-# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-
-# one:
-#   column: value
-#
-# two:
-#   column: value
-patrick: 
-  id: 1 
-  name: patrick 
-  hashed_password: '8935a77c78d62b19d74ca8e35e666539962c38f5'  # veodia 
-  email: patrick@lenz.sh 
-  salt: '207687000.15193984308808'
-john: 
-  id: 2 
-  name: john 
-  hashed_password: '8935a77c78d62b19d74ca8e35e666539962c38f5' # veodia
+patrick:
+  id: 1
+  login: patrick
+  password: sekrit
+  name: Patrick Lenz
+  email: patrick@lenz.sh
+john:
+  id: 2
+  login: john
+  password: gh752px
+  name: John Doe
   email: john@doe.com
-  salt: '207687000.15193984308808'

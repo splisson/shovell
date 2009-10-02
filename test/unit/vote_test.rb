@@ -1,26 +1,13 @@
-require 'test_helper'
+require File.dirname(__FILE__) + '/../test_helper'
 
-class VoteTest < ActiveSupport::TestCase
-  fixtures :votes, :stories 
-  def test_story_association 
-    assert_equal stories(:one), votes(:one).story 
+class VoteTest < Test::Unit::TestCase
+  fixtures :votes, :stories, :users
+  
+  def test_story_association
+    assert_equal stories(:first), votes(:first).story
   end
-  def test_votes_association 
-    assert_equal [ votes(:one), votes(:two) ], 
-        stories(:one).votes 
-  end
-  def test_should_return_highest_vote_id_first 
-    assert_equal votes(:two), stories(:one).latest_votes.first 
-  end 
-  def test_should_return_3_latest_votes 
-    10.times { stories(:one).votes.create } 
-    assert_equal 3, stories(:one).latest_votes.size 
-  end
-  def test_votes_association 
-    assert_equal 1, users(:patrick).votes.size 
-    assert_equal votes(:two), users(:john).votes.first 
-  end
-  def test_user_association 
-    assert_equal users(:john), votes(:two).user 
+  
+  def test_user_association
+    assert_equal users(:john), votes(:second).user
   end
 end
