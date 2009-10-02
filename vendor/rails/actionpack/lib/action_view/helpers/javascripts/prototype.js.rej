@@ -1,0 +1,561 @@
+***************
+*** 1,4 ****
+  /*  Prototype JavaScript framework, version 1.5.0_rc2
+-  *  (c) 2005, 2006 Sam Stephenson <sam@conio.net>
+   *
+   *  Prototype is freely distributable under the terms of an MIT-style license.
+--- 1,4 ----
+  /*  Prototype JavaScript framework, version 1.5.0_rc2
++  *  (c) 2005-2007 Sam Stephenson
+   *
+   *  Prototype is freely distributable under the terms of an MIT-style license.
+***************
+*** 146,149 ****
+    }
+  }
+  Object.extend(String.prototype, {
+    gsub: function(pattern, replacement) {
+--- 146,153 ----
+    }
+  }
++ String.interpret = function(value){
++   return value == null ? '' : String(value);
++ }
++ 
+  Object.extend(String.prototype, {
+    gsub: function(pattern, replacement) {
+***************
+*** 154,158 ****
+        if (match = source.match(pattern)) {
+          result += source.slice(0, match.index);
+-         result += (replacement(match) || '').toString();
+          source  = source.slice(match.index + match[0].length);
+        } else {
+--- 158,162 ----
+        if (match = source.match(pattern)) {
+          result += source.slice(0, match.index);
++         result += String.interpret(replacement(match));
+          source  = source.slice(match.index + match[0].length);
+        } else {
+***************
+*** 248,269 ****
+    },
+  
+    camelize: function() {
+-     var oStringList = this.split('-');
+-     if (oStringList.length == 1) return oStringList[0];
+- 
+-     var camelizedString = this.indexOf('-') == 0
+-       ? oStringList[0].charAt(0).toUpperCase() + oStringList[0].substring(1)
+-       : oStringList[0];
+- 
+-     for (var i = 1, length = oStringList.length; i < length; i++) {
+-       var s = oStringList[i];
+-       camelizedString += s.charAt(0).toUpperCase() + s.substring(1);
+-     }
+- 
+-     return camelizedString;
+    },
+  
+    underscore: function() {
+-     return this.gsub(/::/, '/').gsub(/([A-Z]+)([A-Z][a-z])/,'#{1}_#{2}').gsub(/([a-z\d])([A-Z])/,'#{1}_#{2}').gsub(/-/,'-').toLowerCase();
+    },
+  
+--- 252,280 ----
+    },
+  
++   succ: function() {
++     return this.slice(0, this.length - 1) +
++       String.fromCharCode(this.charCodeAt(this.length - 1) + 1);
++   },
++ 
+    camelize: function() {
++     var parts = this.split('-'), len = parts.length;
++     if (len == 1) return parts[0];
++ 
++     var camelized = this.charAt(0) == '-'
++       ? parts[0].charAt(0).toUpperCase() + parts[0].substring(1)
++       : parts[0];
++ 
++     for (var i = 1; i < len; i++)
++       camelized += parts[i].charAt(0).toUpperCase() + parts[i].substring(1);
++ 
++     return camelized;
++   },
++ 
++   capitalize: function(){
++     return this.charAt(0).toUpperCase() + this.substring(1).toLowerCase();
+    },
+  
+    underscore: function() {
++     return this.gsub(/::/, '/').gsub(/([A-Z]+)([A-Z][a-z])/,'#{1}_#{2}').gsub(/([a-z\d])([A-Z])/,'#{1}_#{2}').gsub(/-/,'_').toLowerCase();
+    },
+  
+***************
+*** 301,305 ****
+        var before = match[1];
+        if (before == '\\') return match[2];
+-       return before + (object[match[3]] || '').toString();
+      });
+    }
+--- 312,316 ----
+        var before = match[1];
+        if (before == '\\') return match[2];
++       return before + String.interpret(object[match[3]]);
+      });
+    }
+***************
+*** 330,334 ****
+      while ((index += number) < array.length)
+        slices.push(array.slice(index, index+number));
+-     return slices.collect(iterator || Prototype.K);
+    },
+  
+--- 341,345 ----
+      while ((index += number) < array.length)
+        slices.push(array.slice(index, index+number));
++     return slices.map(iterator);
+    },
+  
+***************
+*** 354,358 ****
+      var results = [];
+      this.each(function(value, index) {
+-       results.push(iterator(value, index));
+      });
+      return results;
+--- 365,369 ----
+      var results = [];
+      this.each(function(value, index) {
++       results.push((iterator || Prototype.K)(value, index));
+      });
+      return results;
+***************
+*** 401,410 ****
+  
+    inGroupsOf: function(number, fillWith) {
+-     fillWith = fillWith || null;
+-     var results = this.eachSlice(number);
+-     if (results.length > 0) (number - results.last().length).times(function() {
+-       results.last().push(fillWith)
+-     });
+-     return results;
+    },
+  
+--- 412,420 ----
+  
+    inGroupsOf: function(number, fillWith) {
++     fillWith = fillWith === undefined ? null : fillWith;
++     return this.eachSlice(number, function(slice) {
++       while(slice.length < number) slice.push(fillWith);
++       return slice;
++     });
+    },
+  
+***************
+*** 418,422 ****
+    invoke: function(method) {
+      var args = $A(arguments).slice(1);
+-     return this.collect(function(value) {
+        return value[method].apply(value, args);
+      });
+--- 428,432 ----
+    invoke: function(method) {
+      var args = $A(arguments).slice(1);
++     return this.map(function(value) {
+        return value[method].apply(value, args);
+      });
+***************
+*** 470,474 ****
+  
+    sortBy: function(iterator) {
+-     return this.collect(function(value, index) {
+        return {value: value, criteria: iterator(value, index)};
+      }).sort(function(left, right) {
+--- 480,484 ----
+  
+    sortBy: function(iterator) {
++     return this.map(function(value, index) {
+        return {value: value, criteria: iterator(value, index)};
+      }).sort(function(left, right) {
+***************
+*** 479,483 ****
+  
+    toArray: function() {
+-     return this.collect(Prototype.K);
+    },
+  
+--- 489,493 ----
+  
+    toArray: function() {
++     return this.map();
+    },
+  
+***************
+*** 491,494 ****
+        return iterator(collections.pluck(index));
+      });
+    },
+  
+--- 501,508 ----
+        return iterator(collections.pluck(index));
+      });
++   },
++ 
++   size: function() {
++     return this.toArray().length;
+    },
+  
+***************
+*** 543,547 ****
+    compact: function() {
+      return this.select(function(value) {
+-       return value != undefined || value != null;
+      });
+    },
+--- 557,561 ----
+    compact: function() {
+      return this.select(function(value) {
++       return value != null;
+      });
+    },
+***************
+*** 585,588 ****
+    },
+  
+    inspect: function() {
+      return '[' + this.map(Object.inspect).join(', ') + ']';
+--- 599,606 ----
+    },
+  
++   size: function() {
++     return this.length;
++   },
++ 
+    inspect: function() {
+      return '[' + this.map(Object.inspect).join(', ') + ']';
+***************
+*** 591,594 ****
+  
+  Array.prototype.toArray = Array.prototype.clone;
+  
+  if(window.opera){
+--- 609,617 ----
+  
+  Array.prototype.toArray = Array.prototype.clone;
++ 
++ function $w(string){
++   string = string.strip();
++   return string ? string.split(/\s+/) : [];
++ }
+  
+  if(window.opera){
+***************
+*** 802,807 ****
+  
+        this.transport.open(this.options.method.toUpperCase(), this.url,
+-         this.options.asynchronous, this.options.username,
+-         this.options.password);
+  
+        if (this.options.asynchronous)
+--- 825,829 ----
+  
+        this.transport.open(this.options.method.toUpperCase(), this.url,
++         this.options.asynchronous);
+  
+        if (this.options.asynchronous)
+***************
+*** 885,888 ****
+          this.dispatchException(e);
+        }
+      }
+  
+--- 907,914 ----
+          this.dispatchException(e);
+        }
++ 
++       if ((this.getHeader('Content-type') || 'text/javascript').strip().
++         match(/^(text|application)\/(x-)?(java|ecma)script(;.*)?$/i))
++           this.evalResponse();
+      }
+  
+***************
+*** 895,902 ****
+  
+      if (state == 'Complete') {
+-       if ((this.getHeader('Content-type') || '').strip().
+-         match(/^(text|application)\/(x-)?(java|ecma)script(;.*)?$/i))
+-           this.evalResponse();
+- 
+        // avoid memory leak in MSIE: clean up
+        this.transport.onreadystatechange = Prototype.emptyFunction;
+--- 921,924 ----
+  
+      if (state == 'Complete') {
+        // avoid memory leak in MSIE: clean up
+        this.transport.onreadystatechange = Prototype.emptyFunction;
+***************
+*** 1058,1063 ****
+  
+  Element.extend = function(element) {
+-   if (!element) return;
+-   if (_nativeExtensions || element.nodeType == 3) return element;
+  
+    if (!element._extended && element.tagName && element != window) {
+--- 1080,1084 ----
+  
+  Element.extend = function(element) {
++   if (!element || _nativeExtensions || element.nodeType == 3) return element;
+  
+    if (!element._extended && element.tagName && element != window) {
+***************
+*** 1163,1168 ****
+  
+    descendants: function(element) {
+-     element = $(element);
+-     return $A(element.getElementsByTagName('*'));
+    },
+  
+--- 1184,1188 ----
+  
+    descendants: function(element) {
++     return $A($(element).getElementsByTagName('*'));
+    },
+  
+***************
+*** 1188,1195 ****
+  
+    match: function(element, selector) {
+-     element = $(element);
+      if (typeof selector == 'string')
+        selector = new Selector(selector);
+-     return selector.match(element);
+    },
+  
+--- 1208,1214 ----
+  
+    match: function(element, selector) {
+      if (typeof selector == 'string')
+        selector = new Selector(selector);
++     return selector.match($(element));
+    },
+  
+***************
+*** 1216,1220 ****
+  
+    getElementsByClassName: function(element, className) {
+-     element = $(element);
+      return document.getElementsByClassName(className, element);
+    },
+--- 1235,1238 ----
+  
+    getElementsByClassName: function(element, className) {
+      return document.getElementsByClassName(className, element);
+    },
+***************
+*** 1225,1230 ****
+  
+    getHeight: function(element) {
+-     element = $(element);
+-     return element.offsetHeight;
+    },
+  
+--- 1243,1247 ----
+  
+    getHeight: function(element) {
++     return $(element).offsetHeight;
+    },
+  
+***************
+*** 1252,1255 ****
+      if (!(element = $(element))) return;
+      Element.classNames(element).remove(className);
+      return element;
+    },
+--- 1269,1278 ----
+      if (!(element = $(element))) return;
+      Element.classNames(element).remove(className);
++     return element;
++   },
++ 
++   toggleClassName: function(element, className) {
++     if (!(element = $(element))) return;
++     Element.classNames(element)[element.hasClassName(className) ? 'remove' : 'add'](className);
+      return element;
+    },
+***************
+*** 1291,1297 ****
+    scrollTo: function(element) {
+      element = $(element);
+-     var x = element.x ? element.x : element.offsetLeft,
+-         y = element.y ? element.y : element.offsetTop;
+-     window.scrollTo(x, y);
+      return element;
+    },
+--- 1314,1319 ----
+    scrollTo: function(element) {
+      element = $(element);
++     var pos = Position.cumulativeOffset(element);
++     window.scrollTo(pos[0], pos[1]);
+      return element;
+    },
+***************
+*** 1299,1320 ****
+    getStyle: function(element, style) {
+      element = $(element);
+-     var inline = (style == 'float' ?
+-       (typeof element.style.styleFloat != 'undefined' ? 'styleFloat' : 'cssFloat') : style);
+-     var value = element.style[inline.camelize()];
+      if (!value) {
+        if (document.defaultView && document.defaultView.getComputedStyle) {
+          var css = document.defaultView.getComputedStyle(element, null);
+-         value = css ? css.getPropertyValue(style) : null;
+        } else if (element.currentStyle) {
+-         value = element.currentStyle[inline.camelize()];
+        }
+      }
+  
+      if((value == 'auto') && ['width','height'].include(style) && (element.getStyle('display') != 'none'))
+-       value = element['offset'+style.charAt(0).toUpperCase()+style.substring(1)] + 'px';
+  
+      if (window.opera && ['left', 'top', 'right', 'bottom'].include(style))
+        if (Element.getStyle(element, 'position') == 'static') value = 'auto';
+- 
+      return value == 'auto' ? null : value;
+    },
+--- 1321,1347 ----
+    getStyle: function(element, style) {
+      element = $(element);
++     var camelizedStyle = (style == 'float' ?
++       (typeof element.style.styleFloat != 'undefined' ? 'styleFloat' : 'cssFloat') : style).camelize();
++     var value = element.style[camelizedStyle];
+      if (!value) {
+        if (document.defaultView && document.defaultView.getComputedStyle) {
+          var css = document.defaultView.getComputedStyle(element, null);
++         value = css ? css[camelizedStyle] : null;
+        } else if (element.currentStyle) {
++         value = element.currentStyle[camelizedStyle];
+        }
+      }
+  
+      if((value == 'auto') && ['width','height'].include(style) && (element.getStyle('display') != 'none'))
++       value = element['offset'+style.capitalize()] + 'px';
+  
+      if (window.opera && ['left', 'top', 'right', 'bottom'].include(style))
+        if (Element.getStyle(element, 'position') == 'static') value = 'auto';
++     if(style == 'opacity') {
++       if(value) return parseFloat(value);
++       if(value = (element.getStyle('filter') || '').match(/alpha\(opacity=(.*)\)/))
++         if(value[1]) return parseFloat(value[1]) / 100;
++       return 1.0;
++     }
+      return value == 'auto' ? null : value;
+    },
+***************
+*** 1322,1329 ****
+    setStyle: function(element, style) {
+      element = $(element);
+-     for (var name in style)
+-       element.style[ (name == 'float' ?
+-         ((typeof element.style.styleFloat != 'undefined') ? 'styleFloat' : 'cssFloat') : name).camelize()
+-       ] = style[name];
+      return element;
+    },
+--- 1349,1369 ----
+    setStyle: function(element, style) {
+      element = $(element);
++     for (var name in style) {
++       var value = style[name];
++       if(name == 'opacity') {
++         if (value == 1) {
++           value = (/Gecko/.test(navigator.userAgent) &&
++             !/Konqueror|Safari|KHTML/.test(navigator.userAgent)) ? 0.999999 : 1.0;
++           if(/MSIE/.test(navigator.userAgent) && !window.opera)
++             element.style.filter = element.getStyle('filter').replace(/alpha\([^\)]*\)/gi,'');
++         } else {
++           if(value < 0.00001) value = 0;
++           if(/MSIE/.test(navigator.userAgent) && !window.opera)
++             element.style.filter = element.getStyle('filter').replace(/alpha\([^\)]*\)/gi,'') +
++               'alpha(opacity='+value*100+')';
++         }
++       } else if(name == 'float') name = (typeof element.style.styleFloat != 'undefined') ? 'styleFloat' : 'cssFloat';
++       element.style[name.camelize()] = value;
++     }
+      return element;
+    },
+***************
+*** 1652,1656 ****
+        conditions.push('true');
+      if (clause = params.id)
+-       conditions.push('element.id == ' + clause.inspect());
+      if (clause = params.tagName)
+        conditions.push('element.tagName.toUpperCase() == ' + clause.inspect());
+--- 1692,1696 ----
+        conditions.push('true');
+      if (clause = params.id)
++       conditions.push('element.getAttribute("id") == ' + clause.inspect());
+      if (clause = params.tagName)
+        conditions.push('element.tagName.toUpperCase() == ' + clause.inspect());
+***************
+*** 1713,1717 ****
+    matchElements: function(elements, expression) {
+      var selector = new Selector(expression);
+-     return elements.select(selector.match.bind(selector)).collect(Element.extend);
+    },
+  
+--- 1753,1757 ----
+    matchElements: function(elements, expression) {
+      var selector = new Selector(expression);
++     return elements.select(selector.match.bind(selector)).map(Element.extend);
+    },
+  
+***************
+*** 1753,1757 ****
+  Form.Methods = {
+    serialize: function(form) {
+-     return Form.serializeElements($(form).getElements());
+    },
+  
+--- 1793,1797 ----
+  Form.Methods = {
+    serialize: function(form) {
++     return Form.serializeElements(Form.getElements(form));
+    },
+  
+***************
+*** 1768,1777 ****
+    getInputs: function(form, typeName, name) {
+      form = $(form);
+-     var inputs = form.getElementsByTagName('input');
+  
+      if (!typeName && !name)
+-       return inputs;
+- 
+-     var matchingInputs = new Array();
+      for (var i = 0, length = inputs.length; i < length; i++) {
+        var input = inputs[i];
+--- 1808,1816 ----
+    getInputs: function(form, typeName, name) {
+      form = $(form);
++     var inputs = form.getElementsByTagName('input'), matchingInputs = [];
+  
+      if (!typeName && !name)
++       return $A(inputs).map(Element.extend);
++ 
+      for (var i = 0, length = inputs.length; i < length; i++) {
+        var input = inputs[i];
+***************
+*** 1969,1973 ****
+    onTimerEvent: function() {
+      var value = this.getValue();
+-     if (this.lastValue != value) {
+        this.callback(this.element, value);
+        this.lastValue = value;
+--- 2008,2014 ----
+    onTimerEvent: function() {
+      var value = this.getValue();
++     var changed = ('string' == typeof this.lastValue && 'string' == typeof value
++       ? this.lastValue != value : String(this.lastValue) != String(value));
++     if (changed) {
+        this.callback(this.element, value);
+        this.lastValue = value;
