@@ -1,0 +1,10 @@
+<div id="stories_submitted">
+  <h2>Stories submitted by <%= @user.name %></h2>
+  <%= render :partial => 'story/story',
+        :collection => @stories_submitted %>
+</div>
+<div id="stories_voted_on">
+  <h2>Stories voted for by <%= @user.name %></h2>
+  <%= render :partial => 'story/story',
+        :collection => @stories_voted_on %>
+</div>

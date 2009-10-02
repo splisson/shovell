@@ -1,0 +1,49 @@
+<h2>
+  <span id="vote_score">
+    Score: <%= @story.votes_count %>
+  </span>
+  <%= @story.name %>
+</h2>
+
+<ul id="vote_history">
+  <% if @story.votes.empty? %>
+    <em>No shoves yet!</em>
+  <% else %>
+    <%= render :partial => 'vote', :collection => @story.latest_votes %>
+  <% end %>
+</ul>
+
+<p>
+  <%= link_to @story.link, @story.link %>
+</p>
+<p>
+  <%= @story.description %>
+</p>
+<p class="submitted_by">
+  Submitted by: 
+  <span><%= link_to @story.user.login,
+      :controller => 'account',
+      :action => 'show',
+      :id => @story.user.login %></span>
+</p>
+<% if @story.tags.size.nonzero? %>
+  <p class="tags">
+    <strong>Tags:</strong>
+    <%= render :partial => 'tag', :collection => @story.tags %>
+  </p>
+<% end %>
+<% if logged_in? %>
+  <div id="vote_link">
+    <%= link_to_remote 'shove it',
+      { :url => { :action => 'vote', :id => @story } },
+      { :href => url_for(:action => 'vote', :id => @story) } %>
+  </div>
+<% else %>
+  <p>
+    <em>
+      You would be able to vote for this story if you were
+      <%= link_to 'logged in', :controller => 'account',
+            :action => 'login' %>!
+    </em>
+  </p>
+<% end %>

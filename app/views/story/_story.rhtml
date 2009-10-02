@@ -1,0 +1,9 @@
+  <div class="story">
+    <h3><%= link_to story.name,
+              story_url(:permalink => story.permalink) %></h3>
+    <p>
+      Submitted by: <%= story.user.login %> |
+      Score: <%= story.votes_count %><br />
+      Tags: <%= story.tag_list %>
+    </p>
+  </div>
