@@ -4,18 +4,13 @@
   <%= f.error_messages %>
 
   <p>
-    <%= f.label :name %><br />
-    <%= f.text_field :name %>
+    <%= f.label :login %><br />
+    <%= f.text_field :login %>
   </p>
   <div> 
     <%= f.label :user_password, 'Password' %>: 
     <%= f.password_field :password, :size => 40 %> 
   </div> 
-  <div> 
-    <%= f.label :user_password_confirmation, 'Confirm' %>: 
-    <%= f.password_field :password_confirmation, :size => 40 %> 
-  </div>
-  <p>
     <%= f.submit 'Add User' %>
   </p>
 <% end %>
