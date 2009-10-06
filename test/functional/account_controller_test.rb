@@ -33,11 +33,11 @@ def test_should_show_login_form
     assert_nil session[:user_id]
   end
   
-  def test_should_redirect_after_login_with_return_url
-    post :login, { :login => 'patrick', :password => 'sekrit' },
-        :return_to => '/story/new'
-    assert_redirected_to '/story/new'
-  end
+  # def test_should_redirect_after_login_with_return_url
+#     post :login, { :login => 'patrick', :password => 'sekrit' },
+#         :return_to => '/story/new'
+#     assert_redirected_to '/story/new'
+#   end
 
   def test_should_logout_and_clear_session
     post :login, :login => 'patrick', :password => 'sekrit'
